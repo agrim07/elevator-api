@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: genesis-elevator-api
+  profiles:
+    active: local
+  mvc:
+    log-resolved-exception: true
+  datasource:
+    url: jdbc:sqlite:sample.db
+    username: admin
+    password: admin
+    driverClassName: org.sqlite.JDBC
+  jpa:
+    properties:
+      hibernate.database-platform: org.sqlite.hibernate.dialect.SQLiteDialect
+      hibernate.ddl-auto: update
+
+
+logging:
+  level:
+    dk.bankdata.pmt.payment: INFO
+    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: ERROR

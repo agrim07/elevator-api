@@ -1,0 +1,270 @@
+swagger: "2.0"
+info:
+  description: "This is a an api used to create/update user, fetch user buildings abd handling of elevator in the building."
+  version: "1.0.0"
+  title: "User and his/her building elevator's"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "dhankhar.amaresh@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:8080"
+basePath: "/v1"
+tags:
+  - name: "order"
+    description: "Everything about User and Elevator handling"
+schemes:
+  - "http"
+paths:
+  /user:
+    post:
+      tags:
+        - "User"
+      summary: "Used to create a new user"
+      description: ""
+      operationId: "createUser"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User input object contains user information"
+          required: true
+          schema:
+            $ref: "#/definitions/UserRequest"
+      responses:
+        "201":
+          description: "Un-Authorized request"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        "500":
+          description: "Server internal error"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /user/{userId}/buildings:
+    get:
+      tags:
+        - "Building"
+      summary: "Used to all buildings of particular user"
+      description: ""
+      operationId: "buildings"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: userId
+          type: integer
+          format: int64
+          required: true
+          description: Numeric ID of the user to get
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/BuildingResponse"
+        "404":
+          description: "User not found"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        "500":
+          description: "Server internal error"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /user/{userId}/buildings/{buildingId}:
+    get:
+      tags:
+        - "Building"
+      summary: "Used to all buildings of particular user"
+      description: ""
+      operationId: "building"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: userId
+          type: integer
+          format: int64
+          required: true
+          description: Numeric ID of the user to get
+        - in: "path"
+          name: buildingId
+          type: integer
+          format: int64
+          required: true
+          description: Building id whose elevator will be summoned
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/BuildingResponse"
+        "404":
+          description: "User not found"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        "500":
+          description: "Server internal error"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /user/{userId}/buildings/{buildingId}/summons-elevator/{userFloorId}:
+    get:
+      tags:
+        - "Building"
+      summary: "Used to all buildings of particular user"
+      description: ""
+      operationId: "summonsElevator"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: userId
+          type: integer
+          format: int64
+          required: true
+          description: Numeric ID of the user to get
+        - in: "path"
+          name: buildingId
+          type: integer
+          format: int64
+          required: true
+          description: Building id whose elevator will be summoned
+        - in: "path"
+          name: userFloorId
+          type: integer
+          format: int64
+          required: true
+          description: Current floor of the user
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ElevatorResponse"
+        "404":
+          description: "User not found"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        "500":
+          description: "Server internal error"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+definitions:
+  UserRequest:
+    type: object
+    required:
+      - name
+      - buildings
+    properties:
+      identifier:
+        type: integer
+        format: int64
+        minimum: 1
+        maximum: 9999
+      name:
+        type: string
+      buildings:
+        type: array
+        items:
+          $ref: '#/definitions/BuildingObject'
+  BuildingObject:
+    type: object
+    required:
+      - name
+      - location
+      - elevators
+    properties:
+      identifier:
+        type: integer
+        format: int64
+        minimum: 1
+        maximum: 9999
+      name:
+        type: string
+        minLength: 2
+        maxLength: 30
+      location:
+        type: string
+        minLength: 2
+        maxLength: 15
+      elevators:
+        type: array
+        items:
+          $ref: '#/definitions/ElevatorObject'
+  ElevatorObject:
+    type: object
+    required:
+      - name
+      - floors
+      - currentFloor
+      - status
+    properties:
+      identifier:
+        type: integer
+        format: int64
+        minimum: 1
+        maximum: 9999
+      name:
+        type: string
+        minLength: 2
+        maxLength: 30
+      floors:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 20
+      currentFloor:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 20
+      status:
+        type: string
+        description: "Status of the Elevator"
+        enum:
+          - "UP"
+          - "DOWN"
+          - "STOPPED"
+          - "OUTOFSERVICE"
+  ApiResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      type:
+        type: string
+      message:
+        type: string
+  BuildingResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      type:
+        type: string
+      message:
+        type: string
+      buildings:
+        type: array
+        items:
+          $ref: '#/definitions/BuildingObject'
+  ElevatorResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      type:
+        type: string
+      message:
+        type: string
+      elevator:
+        $ref: '#/definitions/ElevatorObject'
